@@ -1,4 +1,4 @@
-import 'package:flashcards/model/card_folder.dart';
+import '../model/card_folder.dart';
 
 enum CardFolderStatus { loading, loaded, empty, error }
 

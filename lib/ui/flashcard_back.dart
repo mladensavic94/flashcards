@@ -30,7 +30,7 @@ class _FlashCardBackState extends State<FlashCardBack> {
                 ),
                 Padding(
                     padding: EdgeInsets.all(10),
-                    child: Text(widget._answer, style: TextStyle(fontSize: 25), textAlign: TextAlign.center)),
+                    child: Text(widget._answer, style: Theme.of(context).textTheme.headline5, textAlign: TextAlign.center)),
                 // Center(child: ),
                 Spacer(
                   flex: 2,

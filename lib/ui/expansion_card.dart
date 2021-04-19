@@ -31,8 +31,6 @@ class ExpansionCard extends StatefulWidget {
 
 class _ExpansionTileState extends State<ExpansionCard>
     with SingleTickerProviderStateMixin {
-  static final Animatable<double> _easeOutTween =
-      CurveTween(curve: Curves.easeOut);
   static final Animatable<double> _easeInTween =
       CurveTween(curve: Curves.easeIn);
   static final Animatable<double> _fastOutSlowIn =
@@ -40,17 +38,9 @@ class _ExpansionTileState extends State<ExpansionCard>
   static final Animatable<double> _halfTween =
       Tween<double>(begin: 0.0, end: 0.5);
 
-  ColorTween _borderColorTween = ColorTween();
-  final ColorTween _headerColorTween = ColorTween();
-  final ColorTween _iconColorTween = ColorTween();
-  final ColorTween _backgroundColorTween = ColorTween();
-
   late AnimationController _controller;
   late Animation<double> _iconTurns;
   late Animation<double> _heightFactor;
-  late Animation<Color?> _headerColor;
-  late Animation<Color?> _iconColor;
-  late Animation<Color?> _backgroundColor;
 
   bool _isExpanded = false;
 
@@ -60,11 +50,6 @@ class _ExpansionTileState extends State<ExpansionCard>
     _controller = AnimationController(duration: _kExpand, vsync: this);
     _heightFactor = _controller.drive(_fastOutSlowIn);
     _iconTurns = _controller.drive(_halfTween.chain(_easeInTween));
-    _headerColor = _controller.drive(_headerColorTween.chain(_easeInTween));
-    _iconColor = _controller.drive(_iconColorTween.chain(_easeInTween));
-    _backgroundColor =
-        _controller.drive(_backgroundColorTween.chain(_easeOutTween));
-
     _isExpanded =
         PageStorage.of(context)?.readState(context) ?? widget.initiallyExpanded;
     if (_isExpanded) _controller.value = 1.0;
@@ -105,8 +90,6 @@ class _ExpansionTileState extends State<ExpansionCard>
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               ListTileTheme.merge(
-                  iconColor: _iconColor.value,
-                  textColor: _headerColor.value,
                   child: Container(
                     margin: EdgeInsets.only(top: 10, bottom: 10),
                     child: ListTile(
@@ -156,21 +139,14 @@ class _ExpansionTileState extends State<ExpansionCard>
           flex: 2,
         ),
         CircleAvatar(
-          child: Icon(_isExpanded ? Icons.folder_open : Icons.folder),
+          backgroundColor: Theme.of(context).primaryColor,
+          child: Icon(_isExpanded ? Icons.folder_open : Icons.folder, color: Colors.white,),
         ),
         Spacer(
           flex: 1,
         )
       ],
     );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _backgroundColorTween
-      ..begin = widget.backgroundColor
-      ..end = Colors.white;
   }
 
   @override
@@ -182,10 +158,9 @@ class _ExpansionTileState extends State<ExpansionCard>
       child: closed
           ? null
           : Container(
-              height: 60,
-              width: 1000,
+              height: MediaQuery.of(context).size.height * 0.08,
+              width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
-                  // color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(5))),
               child: Padding(
                 child: Column(

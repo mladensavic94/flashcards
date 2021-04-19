@@ -1,31 +1,29 @@
+import 'dart:math';
+
 import 'package:flashcards/model/card_data.dart';
 
 class CardFolder{
 
-  final String title;
-  final String desc;
-  final List<CardData> cards;
-  final int score;
-  final int time;
+  int id;
+  String title;
+  String desc;
+  List<CardData> cards;
+  int score;
+  int time;
 
-  CardFolder(this.title,this.desc, this.cards, this.score, this.time);
+  CardFolder(this.title,this.desc, this.cards, this.score, this.time) : id = Random().nextInt(10000);
+
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CardFolder &&
-          runtimeType == other.runtimeType &&
-          title == other.title &&
-          desc == other.desc &&
-          cards == other.cards &&
-          score == other.score &&
-          time == other.time;
+      other is CardFolder && runtimeType == other.runtimeType && id == other.id;
 
   @override
-  int get hashCode =>
-      title.hashCode ^
-      desc.hashCode ^
-      cards.hashCode ^
-      score.hashCode ^
-      time.hashCode;
+  int get hashCode => id.hashCode;
+
+  @override
+  String toString() {
+    return 'CardFolder{id: $id, title: $title, desc: $desc, cards: $cards, score: $score, time: $time}';
+  }
 }

@@ -1,7 +1,7 @@
-import 'package:flashcards/bloc/card_folder_state.dart';
-import 'package:flashcards/model/card_folder.dart';
-import 'package:flashcards/repository/repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../bloc/card_folder_state.dart';
+import '../model/card_folder.dart';
+import '../repository/repository.dart';
 
 class CardFolderCubit extends Cubit<CardFolderState>{
 
@@ -24,7 +24,10 @@ class CardFolderCubit extends Cubit<CardFolderState>{
   Future<void> remove(CardFolder folder) async {
     try{
       List<CardFolder> data = await repository.remove(folder);
-      emit(CardFolderState.loaded(data));
+      if(data.isEmpty)
+        emit(CardFolderState.empty());
+      else
+        emit(CardFolderState.loaded(data));
     } on Exception{
       emit(CardFolderState.error("Izgore sve!"));
     }

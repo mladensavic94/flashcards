@@ -1,8 +1,9 @@
 class CardData{
   String question;
   String answer;
+  int answered;
 
-  CardData(this.question, this.answer);
+  CardData(this.question, this.answer, this.answered);
 
 
   @override
