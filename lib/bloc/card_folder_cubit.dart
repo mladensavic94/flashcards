@@ -43,4 +43,13 @@ class CardFolderCubit extends Cubit<CardFolderState>{
     }
   }
 
-}
+  Future<void> search(String searchWord) async {
+    try{
+      List<CardFolder> data = await repository.search(searchWord);
+        emit(CardFolderState.loaded(data));
+    } on Exception{
+      emit(CardFolderState.error("Izgore sve!"));
+
+  }
+
+}}

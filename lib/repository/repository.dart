@@ -1,3 +1,5 @@
+import 'dart:core';
+
 import 'package:flashcards/model/card_data.dart';
 import 'package:flashcards/model/card_folder.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ abstract class Repository{
   Future<void> save(CardFolder folder);
   Future<CardFolder> find(int id);
   Future<List<CardFolder>> findAll();
+  Future<List<CardFolder>> search(String search);
   Future<List<CardFolder>> remove(CardFolder folder);
 }
 
@@ -24,6 +27,7 @@ class FakeRepository extends Repository{
   @override
   Future<List<CardFolder>> findAll() {
     data[0].cards = longQuiz;
+    data.sort();
     return Future.value(data);
   }
 
@@ -44,4 +48,10 @@ class FakeRepository extends Repository{
     return Future.value(data);
   }
 
+  @override
+  Future<List<CardFolder>> search(String search) {
+    var result = data.where((element) => element.title.toLowerCase().startsWith(search.toLowerCase())).toList();
+    result.sort();
+    return Future.value(result);
+  }
 }

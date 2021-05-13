@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flashcards/model/card_data.dart';
-import 'package:flashcards/ui/flashcard_back.dart';
-import 'package:flashcards/ui/flashcard_front.dart';
+import 'flashcard_back.dart';
+import 'flashcard_front.dart';
 import 'package:flutter/material.dart';
 
 class Flashcard extends StatefulWidget {

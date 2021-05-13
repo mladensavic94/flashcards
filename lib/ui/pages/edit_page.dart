@@ -1,9 +1,8 @@
 import 'package:flashcards/model/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../model/card_folder.dart';
+import '../../model/card_folder.dart';
 
-// ignore: must_be_immutable
 class CreateFlashcardDrawer extends StatefulWidget {
   CardFolder _cardFolder;
 

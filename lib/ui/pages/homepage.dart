@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/card_folder_cubit.dart';
-import '../bloc/card_folder_state.dart';
-import '../model/card_folder.dart';
-import '../model/constants.dart';
-import '../ui/expansion_card.dart';
-import '../ui/quiz_page.dart';
-import '../ui/background_painter.dart';
-import '../ui/edit_page.dart';
+import '../widgets/drawer.dart';
+import '../../bloc/card_folder_cubit.dart';
+import '../../bloc/card_folder_state.dart';
+import '../../model/card_folder.dart';
+import '../../model/constants.dart';
+import '../widgets/expansion_card.dart';
+import 'quiz_page.dart';
+import '../background_painter.dart';
+import 'edit_page.dart';
 
 class Homepage extends StatefulWidget {
   @override
@@ -15,6 +16,8 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  TextEditingController searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     context.read<CardFolderCubit>().getAllFolders();
@@ -26,11 +29,7 @@ class _HomepageState extends State<Homepage> {
         child: Icon(Icons.add),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      bottomNavigationBar: BottomNavigationBar(items: [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.multiline_chart), label: "Statistics"),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings")
-      ], onTap: (value) => debugPrint("jedi govna bas sad! $value"),),
+      drawer: FlashcardDrawer(),
       body: Stack(
         children: [
           Container(
@@ -39,13 +38,13 @@ class _HomepageState extends State<Homepage> {
           CustomPaint(
             painter: BackgroundPainter(Color.fromRGBO(49, 73, 60, 0.3)),
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.21,
+              height: MediaQuery.of(context).size.height * 0.23,
             ),
           ),
           CustomPaint(
             painter: BackgroundPainter(Color.fromRGBO(179, 239, 178, 1)),
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.2,
+              height: MediaQuery.of(context).size.height * 0.22,
             ),
           ),
           _buildBody()
@@ -63,15 +62,44 @@ class _HomepageState extends State<Homepage> {
               children: [
                 Container(
                   height: (MediaQuery.of(context).size.height) * 0.20,
-                  child: Center(child: Text("What are we learning today?")),
+                  child: Center(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("What are we learning today?"),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Container(
+                        height: (MediaQuery.of(context).size.height) * 0.05,
+                        width: (MediaQuery.of(context).size.width) * 0.80,
+                        child: TextField(
+                          onChanged: (_) => _search(),
+                          controller: searchController,
+                          style: Theme.of(context).textTheme.bodyText1,
+                          textAlignVertical: TextAlignVertical.center,
+                          decoration: InputDecoration(
+                              hintStyle: Theme.of(context).textTheme.headline6,
+                              suffixIcon: IconButton(
+                                icon: Icon(Icons.search),
+                                onPressed: () => _search(),
+                              ),
+                              hintText: "Search...",
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(50))),
+                        ),
+                      )
+                    ],
+                  )),
                 ),
-                Container(
-                  height: (MediaQuery.of(context).size.height) * 0.6,
+                Expanded(
                   child: Padding(
                     padding:
                         const EdgeInsets.only(top: 20.0, left: 10, right: 10),
                     child: ListView.builder(
                       itemCount: state.data.length,
+
                       itemBuilder: (context, index) =>
                           _buildDrawer(state.data[index]),
                     ),
@@ -110,7 +138,7 @@ class _HomepageState extends State<Homepage> {
 
   Widget _buildDrawer(CardFolder data) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 15.0, left: 8, right: 8),
+      padding: const EdgeInsets.only(top: 5, bottom: 10.0, left: 8, right: 8),
       child: Container(
         decoration: BoxDecoration(boxShadow: [
           BoxShadow(
@@ -188,8 +216,36 @@ class _HomepageState extends State<Homepage> {
             )
           ],
           backgroundColor: Colors.white,
+          trailing: IconButton(
+            icon: Icon(data.isFavourite
+                ? Icons.favorite
+                : Icons.favorite_border_outlined),
+            onPressed: () {
+              setState(() {
+                data.isFavourite = !data.isFavourite;
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text("${data.title} ${data.isFavourite ? "added to" : "removed from"} favourites", textAlign: TextAlign.center,),
+                    duration: const Duration(milliseconds: 1000),
+                    // width: MediaQuery.of(context).size.width * 0.6,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      // Inner padding for SnackBar content.
+                    ),
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    )
+                ));
+              });
+            },
+          ),
         ),
       ),
     );
+  }
+
+  _search() {
+    var searchWord = searchController.text;
+    context.read<CardFolderCubit>().search(searchWord);
   }
 }
