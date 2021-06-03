@@ -6,7 +6,7 @@ import 'flashcard_front.dart';
 import 'package:flutter/material.dart';
 
 class Flashcard extends StatefulWidget {
-  final CardData _cardData;
+  final CardInfo _cardData;
   final Function _answerCallback;
 
   Flashcard(this._cardData, this._answerCallback, {key}) :super(key: key);

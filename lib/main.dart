@@ -1,6 +1,6 @@
-import 'package:flashcards/bloc/card_folder_cubit.dart';
+import 'package:flashcards/bloc/quiz_cubit.dart';
 import 'package:flashcards/repository/repository.dart';
-import 'package:flashcards/ui/pages/homepage.dart';
+import 'package:flashcards/ui/pages/page_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,11 +8,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(MyApp());
+  runApp(FlashCards());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class FlashCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +19,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           primaryColor: Color.fromRGBO(64, 99, 65, 1),
-          // backgroundColor: Color.fromRGBO(232, 241, 242, 1),
           scaffoldBackgroundColor: Color.fromRGBO(226, 235, 235, 1),
           textTheme: TextTheme(
             bodyText1: TextStyle(
@@ -47,7 +45,7 @@ class MyApp extends StatelessWidget {
           )),
       home: BlocProvider(
           create: (context) => CardFolderCubit(FakeRepository()),
-          child: Homepage()),
+          child: PageWrapper()),
     );
   }
 }

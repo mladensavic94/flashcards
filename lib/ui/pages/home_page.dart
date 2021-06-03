@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../widgets/drawer.dart';
-import '../../bloc/card_folder_cubit.dart';
-import '../../bloc/card_folder_state.dart';
-import '../../model/card_folder.dart';
+
+import '../../bloc/quiz_cubit.dart';
+import '../../bloc/quiz_state.dart';
+import '../../model/card_data.dart';
 import '../../model/constants.dart';
+import '../../model/quiz.dart';
 import '../widgets/expansion_card.dart';
-import 'quiz_page.dart';
-import '../background_painter.dart';
 import 'edit_page.dart';
+import 'quiz_page.dart';
 
 class Homepage extends StatefulWidget {
   @override
@@ -21,93 +21,65 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     context.read<CardFolderCubit>().getAllFolders();
-    final appBar = AppBar(title: Text("FlashCards"));
-    return Scaffold(
-      appBar: appBar,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _createFlashcardDrawer(CardFolder("", "", [], 0, 0)),
-        child: Icon(Icons.add),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
-      drawer: FlashcardDrawer(),
-      body: Stack(
-        children: [
-          Container(
-            color: Color.fromRGBO(226, 235, 235, 1),
-          ),
-          CustomPaint(
-            painter: BackgroundPainter(Color.fromRGBO(49, 73, 60, 0.3)),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.23,
-            ),
-          ),
-          CustomPaint(
-            painter: BackgroundPainter(Color.fromRGBO(179, 239, 178, 1)),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.22,
-            ),
-          ),
-          _buildBody()
-        ],
-      ),
+    return Stack(
+      children: [...Constants.backgroundPainterSetup(context), _buildBody()],
     );
   }
 
-  BlocBuilder<CardFolderCubit, CardFolderState> _buildBody() {
-    return BlocBuilder<CardFolderCubit, CardFolderState>(
+  BlocBuilder<CardFolderCubit, QuizState> _buildBody() {
+    return BlocBuilder<CardFolderCubit, QuizState>(
       builder: (context, state) {
         switch (state.status) {
-          case CardFolderStatus.loaded:
-            return Column(
-              children: [
-                Container(
-                  height: (MediaQuery.of(context).size.height) * 0.20,
-                  child: Center(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("What are we learning today?"),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        height: (MediaQuery.of(context).size.height) * 0.05,
-                        width: (MediaQuery.of(context).size.width) * 0.80,
-                        child: TextField(
-                          onChanged: (_) => _search(),
-                          controller: searchController,
-                          style: Theme.of(context).textTheme.bodyText1,
-                          textAlignVertical: TextAlignVertical.center,
-                          decoration: InputDecoration(
-                              hintStyle: Theme.of(context).textTheme.headline6,
-                              suffixIcon: IconButton(
-                                icon: Icon(Icons.search),
-                                onPressed: () => _search(),
-                              ),
-                              hintText: "Search...",
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(50))),
+          case QuizStatus.loaded:
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  Container(
+                    height: (MediaQuery.of(context).size.height) * 0.17,
+                    child: Center(
+                        child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("What are we learning today?"),
+                        SizedBox(
+                          height: 5,
                         ),
-                      )
-                    ],
-                  )),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding:
-                        const EdgeInsets.only(top: 20.0, left: 10, right: 10),
-                    child: ListView.builder(
-                      itemCount: state.data.length,
-
-                      itemBuilder: (context, index) =>
-                          _buildDrawer(state.data[index]),
+                        Container(
+                          height: (MediaQuery.of(context).size.height) * 0.05,
+                          width: (MediaQuery.of(context).size.width) * 0.80,
+                          child: TextField(
+                            onChanged: (_) => _search(),
+                            controller: searchController,
+                            style: Theme.of(context).textTheme.bodyText1,
+                            textAlignVertical: TextAlignVertical.center,
+                            decoration: InputDecoration(
+                                hintStyle:
+                                    Theme.of(context).textTheme.headline6,
+                                suffixIcon: IconButton(
+                                  icon: Icon(Icons.search),
+                                  onPressed: () => _search(),
+                                ),
+                                hintText: "Search...",
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(50))),
+                          ),
+                        )
+                      ],
+                    )),
+                  ),
+                  Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                          children:
+                              state.data.map((e) => _buildDrawer(e)).toList()),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             );
-          case CardFolderStatus.empty:
+          case QuizStatus.empty:
             return Center(
               child: Text(
                 "Create first quiz by clicking + below!",
@@ -123,11 +95,11 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  void _createFlashcardDrawer(CardFolder cardFolder) {
+  void _createFlashcardDrawer(Quiz cardFolder) {
     var result = Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CreateFlashcardDrawer(cardFolder),
+          builder: (context) => EditPage(cardFolder),
         ));
     result.then((value) {
       setState(() {
@@ -136,15 +108,15 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
-  Widget _buildDrawer(CardFolder data) {
+  Widget _buildDrawer(Quiz data) {
     return Padding(
       padding: const EdgeInsets.only(top: 5, bottom: 10.0, left: 8, right: 8),
       child: Container(
         decoration: BoxDecoration(boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.5),
-            spreadRadius: 3,
-            blurRadius: 7,
+            spreadRadius: 2,
+            blurRadius: 5,
             offset: Offset(5, 5),
           )
         ]),
@@ -190,7 +162,12 @@ class _HomepageState extends State<Homepage> {
                             builder: (context) => QuizPage(data)));
                     result.then((value) {
                       setState(() {
-                        if (value is CardFolder) data = value;
+                        if (value is Quiz) {
+                          data = value;
+                          data.cards.forEach((e) {
+                            e.state = QuestionState.UNANSWERED;
+                          });
+                        }
                       });
                     });
                   },
@@ -217,25 +194,24 @@ class _HomepageState extends State<Homepage> {
           ],
           backgroundColor: Colors.white,
           trailing: IconButton(
-            icon: Icon(data.isFavourite
-                ? Icons.favorite
-                : Icons.favorite_border_outlined),
+            icon: Icon(data.isFavourite ? Icons.star : Icons.star_border),
             onPressed: () {
               setState(() {
                 data.isFavourite = !data.isFavourite;
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text("${data.title} ${data.isFavourite ? "added to" : "removed from"} favourites", textAlign: TextAlign.center,),
+                    content: Text(
+                      "${data.title} ${data.isFavourite ? "added to" : "removed from"} favourites",
+                      textAlign: TextAlign.center,
+                    ),
                     duration: const Duration(milliseconds: 1000),
                     // width: MediaQuery.of(context).size.width * 0.6,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16.0,
-                      // Inner padding for SnackBar content.
                     ),
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
-                    )
-                ));
+                    )));
               });
             },
           ),

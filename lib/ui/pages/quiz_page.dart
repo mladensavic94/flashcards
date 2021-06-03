@@ -1,13 +1,12 @@
-import 'package:flashcards/model/card_data.dart';
 import 'package:flutter/material.dart';
 
-import '../../model/card_folder.dart';
+import '../../model/card_data.dart';
+import '../../model/quiz.dart';
 import '../../model/constants.dart';
 import '../widgets/flashcard.dart';
-import '../background_painter.dart';
 
 class QuizPage extends StatefulWidget {
-  final CardFolder data;
+  final Quiz data;
 
   QuizPage(this.data);
 
@@ -27,21 +26,7 @@ class _QuizPageState extends State<QuizPage> {
       appBar: AppBar(title: Text(widget.data.title)),
       body: Stack(
         children: [
-          Container(
-            color: Color.fromRGBO(226, 235, 235, 1),
-          ),
-          CustomPaint(
-            painter: BackgroundPainter(Color.fromRGBO(49, 73, 60, 0.3)),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.23,
-            ),
-          ),
-          CustomPaint(
-            painter: BackgroundPainter(Color.fromRGBO(179, 239, 178, 1)),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.22,
-            ),
-          ),
+          ...Constants.backgroundPainterSetup(context),
           _buildMainBody()
         ],
       ),
@@ -100,11 +85,11 @@ class _QuizPageState extends State<QuizPage> {
                 width: MediaQuery.of(context).size.width * 0.15,
                 height: MediaQuery.of(context).size.width * 0.15,
                 decoration: BoxDecoration(
-                    color: resolveColorForAnswer(e.answered),
+                    color: e.state.color,
                     shape: BoxShape.circle),
                 child: Center(
                   child: IconButton(
-                    icon: Icon(resolveIconForAnswer(e.answered)),
+                    icon: Icon(e.state.iconData),
                     onPressed: () {
                       setState(() {
                         cardIndex = widget.data.cards.indexOf(e);
@@ -116,32 +101,6 @@ class _QuizPageState extends State<QuizPage> {
             );
           }).toList(),
         ));
-  }
-
-  Color resolveColorForAnswer(int ans) {
-    switch (ans) {
-      case -1:
-        return Colors.grey;
-      case 0:
-        return Colors.red;
-      case 1:
-        return Colors.green;
-      default:
-        return Colors.blue;
-    }
-  }
-
-  IconData resolveIconForAnswer(int ans) {
-    switch (ans) {
-      case -1:
-        return Icons.pending_outlined;
-      case 0:
-        return Icons.mood_bad;
-      case 1:
-        return Icons.mood;
-      default:
-        return Icons.pending_outlined;
-    }
   }
 
   Column _buildScoreWidget(BuildContext context) {
@@ -223,10 +182,10 @@ class _QuizPageState extends State<QuizPage> {
     actionsPadding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.1),
     );
   }
-  void updateScore(int scoreVal) {
+  void updateScore(QuestionState state) {
     setState(() {
-      widget.data.cards[cardIndex].answered = scoreVal;
-      score += scoreVal;
+      widget.data.cards[cardIndex].state = state;
+      score += state.value;
       var nextIndex = findNextIndex(widget.data.cards);
       if (nextIndex >= 0)
         cardIndex = nextIndex;
@@ -245,11 +204,11 @@ class _QuizPageState extends State<QuizPage> {
     });
   }
 
-  int findNextIndex(List<CardData> cards) {
+  int findNextIndex(List<CardInfo> cards) {
     for (int i = cardIndex + 1; i <= cards.length; i++) {
       if(i == cards.length)
         i = 0;
-      if(cards[i].answered == -1)
+      if(cards[i].state == QuestionState.UNANSWERED)
         return i;
       if(i == cardIndex) break;
     }

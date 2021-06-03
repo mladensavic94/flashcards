@@ -1,18 +1,18 @@
-import 'package:flashcards/model/constants.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../model/card_folder.dart';
 
-class CreateFlashcardDrawer extends StatefulWidget {
-  CardFolder _cardFolder;
+import '../../model/constants.dart';
+import '../../model/quiz.dart';
 
-  CreateFlashcardDrawer(this._cardFolder);
+class EditPage extends StatefulWidget {
+  Quiz _cardFolder;
+
+  EditPage(this._cardFolder);
 
   @override
-  _CreateFlashcardDrawerState createState() => _CreateFlashcardDrawerState();
+  _EditPageState createState() => _EditPageState();
 }
 
-class _CreateFlashcardDrawerState extends State<CreateFlashcardDrawer> {
+class _EditPageState extends State<EditPage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descController = TextEditingController();
 

@@ -1,3 +1,4 @@
+import 'package:flashcards/model/card_data.dart';
 import 'package:flashcards/model/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -46,12 +47,12 @@ class _FlashCardBackState extends State<FlashCardBack> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () => widget._answerCallback(1),
+                  onPressed: () => widget._answerCallback(QuestionState.CORRECT),
                   child: Icon(Icons.check),
                   style: Constants.defaultButtonWithColor(Colors.green),
                 ),
                 ElevatedButton(
-                  onPressed: () => widget._answerCallback(0),
+                  onPressed: () => widget._answerCallback(QuestionState.WRONG),
                   child: Icon(Icons.cancel_outlined),
                   style: Constants.defaultButtonWithColor(Colors.red),
                 )
