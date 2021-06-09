@@ -3,20 +3,32 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../bloc/quiz_cubit.dart';
 import '../../bloc/quiz_state.dart';
-import '../../model/card_data.dart';
 import '../../model/constants.dart';
 import '../../model/quiz.dart';
-import '../widgets/expansion_card.dart';
+import '../widgets/action_card.dart';
 import 'edit_page.dart';
-import 'quiz_page.dart';
 
 class Homepage extends StatefulWidget {
   @override
   _HomepageState createState() => _HomepageState();
 }
 
-class _HomepageState extends State<Homepage> {
+class _HomepageState extends State<Homepage> with SingleTickerProviderStateMixin{
   TextEditingController searchController = TextEditingController();
+  static const Duration toggleDuration = Duration(milliseconds: 250);
+  static const double maxSlide = 225;
+  static const double minDragStartEdge = 60;
+  static const double maxDragStartEdge = maxSlide - 16;
+  AnimationController? _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: toggleDuration,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,105 +128,12 @@ class _HomepageState extends State<Homepage> {
           BoxShadow(
             color: Colors.black.withOpacity(0.5),
             spreadRadius: 2,
-            blurRadius: 5,
+            blurRadius: 20,
             offset: Offset(5, 5),
           )
         ]),
-        child: ExpansionCard(
-          title: Container(
-            height: MediaQuery.of(context).size.height * 0.1,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Spacer(
-                  flex: 1,
-                ),
-                Text(
-                  data.title,
-                  style: Theme.of(context).textTheme.bodyText2,
-                ),
-                Text(
-                  data.desc,
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                (data.time > 0)
-                    ? Text(
-                        "${data.score} correct (out of ${data.cards.length}) in ${data.time} secs",
-                        style: Theme.of(context).textTheme.headline6,
-                      )
-                    : Container(),
-                Spacer(
-                  flex: 2,
-                ),
-              ],
-            ),
-          ),
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    var result = Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => QuizPage(data)));
-                    result.then((value) {
-                      setState(() {
-                        if (value is Quiz) {
-                          data = value;
-                          data.cards.forEach((e) {
-                            e.state = QuestionState.UNANSWERED;
-                          });
-                        }
-                      });
-                    });
-                  },
-                  child: Icon(Icons.play_circle_fill),
-                  style: Constants.defaultButtonWithColor(
-                      Theme.of(context).primaryColor),
-                ),
-                ElevatedButton(
-                  onPressed: () => _createFlashcardDrawer(data),
-                  child: Icon(Icons.edit),
-                  style: Constants.defaultButtonWithColor(
-                      Theme.of(context).primaryColor),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    context.read<CardFolderCubit>().remove(data);
-                  },
-                  child: Icon(Icons.delete),
-                  style: Constants.defaultButtonWithColor(
-                      Theme.of(context).primaryColor),
-                )
-              ],
-            )
-          ],
-          backgroundColor: Colors.white,
-          trailing: IconButton(
-            icon: Icon(data.isFavourite ? Icons.star : Icons.star_border),
-            onPressed: () {
-              setState(() {
-                data.isFavourite = !data.isFavourite;
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                      "${data.title} ${data.isFavourite ? "added to" : "removed from"} favourites",
-                      textAlign: TextAlign.center,
-                    ),
-                    duration: const Duration(milliseconds: 1000),
-                    // width: MediaQuery.of(context).size.width * 0.6,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    )));
-              });
-            },
-          ),
+        child: ActionCard(
+          data: data,
         ),
       ),
     );
