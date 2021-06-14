@@ -1,4 +1,4 @@
-import 'package:flashcards/ui/background_painter.dart';
+import 'package:flashcards/painters/background_painter.dart';
 import 'package:flutter/material.dart';
 
 class Constants{

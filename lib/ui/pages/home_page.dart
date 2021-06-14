@@ -15,20 +15,6 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> with SingleTickerProviderStateMixin{
   TextEditingController searchController = TextEditingController();
-  static const Duration toggleDuration = Duration(milliseconds: 250);
-  static const double maxSlide = 225;
-  static const double minDragStartEdge = 60;
-  static const double maxDragStartEdge = maxSlide - 16;
-  AnimationController? _animationController;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: toggleDuration,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

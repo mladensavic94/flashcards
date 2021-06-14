@@ -30,6 +30,7 @@ class FlashCards extends StatelessWidget {
             bodyText2: TextStyle(
                 fontSize: 20,
                 fontFamily: "RobotoMono",
+                fontStyle: FontStyle.italic,
                 color: Color.fromRGBO(0, 26, 35, 1),
                 fontWeight: FontWeight.bold),
             headline6: TextStyle(
