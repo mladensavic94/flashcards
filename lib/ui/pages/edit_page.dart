@@ -1,10 +1,11 @@
+import 'package:flashcards/model/card_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
-import '../../model/constants.dart';
 import '../../model/quiz.dart';
 
 class EditPage extends StatefulWidget {
-  Quiz _cardFolder;
+  final Quiz _cardFolder;
 
   EditPage(this._cardFolder);
 
@@ -13,101 +14,75 @@ class EditPage extends StatefulWidget {
 }
 
 class _EditPageState extends State<EditPage> {
-  TextEditingController titleController = TextEditingController();
-  TextEditingController descController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    titleController.text = widget._cardFolder.title;
-    descController.text = widget._cardFolder.desc;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Editor"),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.15,
-                child: Column(children: [
-                  TextField(
-                    decoration: InputDecoration(labelText: "Quiz name"),
-                    controller: titleController,
-                  ),
-                  TextField(
-                    decoration: InputDecoration(labelText: "Quiz description"),
-                    controller: descController,
-                  )
-                ]),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.5,
-                child: ListView.builder(
-                  itemCount: widget._cardFolder.cards.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Column(
-                        children: [
-                          TextField(
-                            decoration:
-                                InputDecoration(labelText: "Question 1"),
-                          ),
-                          TextField(
-                            decoration: InputDecoration(labelText: "Answer 1"),
-                          )
-                        ],
-                      ),
-                      trailing: Column(
-                        children: [
-                          Spacer(
-                            flex: 2,
-                          ),
-                          (index + 1 == widget._cardFolder.cards.length)
-                              ? IconButton(
-                                  icon: Icon(Icons.add),
-                                  onPressed: () => debugPrint("add"),
-                                )
-                              : IconButton(
-                                  icon: Icon(Icons.remove),
-                                  onPressed: () => debugPrint("remove"),
-                                ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                      onPressed: () {
-                        widget._cardFolder.title = titleController.text;
-                        widget._cardFolder.desc = descController.text;
-                        Navigator.pop(context, widget._cardFolder);
-                      },
-                      child: Icon(Icons.save),
-                      style: Constants.defaultButtonWithColor(Colors.green)),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context, widget._cardFolder);
-                    },
-                    child: Icon(Icons.cancel),
-                    style: Constants.defaultButtonWithColor(Colors.red),
-                  )
-                ],
-              )
-            ],
-          ),
+        appBar: AppBar(
+          title: Text("Editor"),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () {
+                setState(() {
+                  widget._cardFolder.cards
+                      .add(CardInfo("", "", QuestionState.UNANSWERED));
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.save),
+              onPressed: () {
+                Navigator.pop(context, widget._cardFolder);
+              },
+            )
+          ],
         ),
-      ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8, right: 8),
+            child: Column(
+              children: [
+                TextField(
+                  controller: TextEditingController(text: widget._cardFolder.title),
+                  decoration: InputDecoration(labelText: "Quiz name:"),
+                ),
+                TextField(
+                  controller: TextEditingController(text: widget._cardFolder.desc),
+                  decoration: InputDecoration(labelText: "Quiz description:"),
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  child: ListView.builder(
+                    itemCount: widget._cardFolder.cards.length,
+                    itemBuilder: (context, index) => _buildQABlock(context, index),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ));
+  }
+
+  Widget _buildQABlock(BuildContext context, int index) {
+    return Column(
+      children: [
+        TextField(
+          controller: TextEditingController(text: widget._cardFolder.cards[index].question),
+          decoration: InputDecoration(labelText: "Question ${index + 1}:"),
+          onChanged: (value) => widget._cardFolder.cards[index].question = value,
+        ),
+        TextField(
+          controller: TextEditingController(text: widget._cardFolder.cards[index].answer),
+          decoration: InputDecoration(labelText: "Answer ${index + 1}:"),
+          onChanged: (value) => widget._cardFolder.cards[index].answer = value,
+        )
+      ],
     );
   }
 }

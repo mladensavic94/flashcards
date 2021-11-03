@@ -171,17 +171,14 @@ class _QuizPageState extends State<QuizPage> {
       ),
       actions: [
         ElevatedButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: Text("Review"),
-          style: Constants.defaultButtonWithColor(Theme.of(context).primaryColor),),
-        ElevatedButton(
           onPressed: () => Navigator.pop(context, true),
           child: Text("Exit"),
           style: Constants.defaultButtonWithColor(Theme.of(context).primaryColor),)
       ],
-    actionsPadding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.1),
+    actionsPadding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.2),
     );
   }
+
   void updateScore(QuestionState state) {
     setState(() {
       widget.data.cards[cardIndex].state = state;

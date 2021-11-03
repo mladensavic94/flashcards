@@ -171,24 +171,32 @@ class _ActionCardState extends State<ActionCard>
     var result = Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => QuizPage(widget.data),
+          builder: (context) => QuizPage(widget.data.copyWithoutAnswers()),
         ));
+    result.then((value) {
+      setState(() {
+        if (value != null) context.read<CardFolderCubit>().save(value);
+        print(value.toString());
+      });
+    });
   }
 
   void _startEdit() {
     var result = Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => EditPage(widget.data),
+          builder: (context) => EditPage(widget.data.copy()),
         ));
     result.then((value) {
       setState(() {
+        print(value.toString());
         if (value != null) context.read<CardFolderCubit>().save(value);
       });
     });
   }
 
   void _delete() {
-    print("todo");
+    //TODO add confirmation dialog
+    context.read<CardFolderCubit>().remove(widget.data);
   }
 }

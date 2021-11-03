@@ -37,4 +37,26 @@ class Quiz extends Comparable<Quiz> {
       return 1;
     }
   }
+
+  Quiz copy() {
+    var copy = Quiz(this.title, this.desc, this.cards, this.score, this.time);
+    copy.id = this.id;
+    copy.isFavourite = this.isFavourite;
+    copy.cards = copy.cards.map((card) {
+      var newCard = CardInfo(card.question, card.answer, card.state);
+      return newCard;
+    }).toList();
+    return copy;
+  }
+
+  Quiz copyWithoutAnswers() {
+    var copy = Quiz(this.title, this.desc, this.cards, this.score, this.time);
+    copy.id = this.id;
+    copy.isFavourite = this.isFavourite;
+    copy.cards = copy.cards.map((card) {
+      var newCard = CardInfo(card.question, card.answer, QuestionState.UNANSWERED);
+      return newCard;
+    }).toList();
+    return copy;
+  }
 }

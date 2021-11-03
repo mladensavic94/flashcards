@@ -6,7 +6,6 @@ import '../../bloc/quiz_state.dart';
 import '../../model/constants.dart';
 import '../../model/quiz.dart';
 import '../widgets/action_card.dart';
-import 'edit_page.dart';
 
 class Homepage extends StatefulWidget {
   @override
@@ -80,7 +79,7 @@ class _HomepageState extends State<Homepage> with SingleTickerProviderStateMixin
           case QuizStatus.empty:
             return Center(
               child: Text(
-                "Create first quiz by clicking + below!",
+                "Create first quiz by clicking +!",
                 style: Theme.of(context).textTheme.bodyText1,
               ),
             );
@@ -91,19 +90,6 @@ class _HomepageState extends State<Homepage> with SingleTickerProviderStateMixin
         }
       },
     );
-  }
-
-  void _createFlashcardDrawer(Quiz cardFolder) {
-    var result = Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => EditPage(cardFolder),
-        ));
-    result.then((value) {
-      setState(() {
-        if (value != null) context.read<CardFolderCubit>().save(value);
-      });
-    });
   }
 
   Widget _buildDrawer(Quiz data) {
